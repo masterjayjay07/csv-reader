@@ -39,7 +39,7 @@ function FileUploadComponent() {
           setCsvData(data);
         }
       };
-
+      console.log(data)
       reader.readAsText(selectedFile);
     } else {
       console.log('No file selected.');
