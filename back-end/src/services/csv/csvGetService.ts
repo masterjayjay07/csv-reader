@@ -7,11 +7,11 @@ const csvGetService = async (q: IUserSearch) => {
   return new Promise((resolve, reject) => {
     db.serialize(function () {
       if (!q) {
-        return db.all('SELECT * FROM csv', (err: any, rows: ICsvCreate[]) => {
+        return db.all('SELECT * FROM csv', (err: any, data: ICsvCreate[]) => {
           if (err) {
             reject('Failed to retrieve data.');
           } else {
-            resolve(rows);
+            resolve(data);
           }
         });
       }
@@ -23,11 +23,11 @@ const csvGetService = async (q: IUserSearch) => {
       `;
 
       const searchTerm = `%${q}%`;
-      db.all(sql, [searchTerm, searchTerm, searchTerm, searchTerm], (err: any, rows: ICsvCreate[]) => {
+      db.all(sql, [searchTerm, searchTerm, searchTerm, searchTerm], (err: any, data: ICsvCreate[]) => {
         if (err) {
           return reject('Failed to retrieve data.');
         }
-        return resolve(rows);
+        return resolve(data);
       });
     });
   });

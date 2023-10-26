@@ -23,8 +23,8 @@ export class CsvController {
     csvGetController = async (req: Request, res: Response) => {
         try {
             const { q } = req.query;
-            const csvData = await csvGetService(q);
-            return res.status(200).json(csvData);
+            const data = await csvGetService(q);
+            return res.status(200).json(data);
         } catch (err) {
             if (err instanceof AppError) {
                 handleError(err, res);
