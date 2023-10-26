@@ -2,5 +2,8 @@ export interface ICsvCreate {
     name: string,
     city: string,
     country: string,
-    favourite_sport: string
+    favorite_sport: string
+}
+export interface IUserSearch {
+    q: string | string[] | undefined
 }

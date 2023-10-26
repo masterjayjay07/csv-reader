@@ -36,15 +36,50 @@ function FileUploadComponent() {
             data.push(obj);
           }
 
+          fetch('http://localhost:3000/files', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(data),
+          })
+            .then((response) => {
+              if (response.ok) {
+                return response.json();
+              }
+              throw new Error('Network error');
+            })
+            .then((insertedData) => {
+              console.log('inserted data:', insertedData);
+            })
+            .catch((error) => {
+              console.error('Error:', error);
+            });
+
           setCsvData(data);
         }
       };
-      console.log(data)
       reader.readAsText(selectedFile);
     } else {
       console.log('No file selected.');
     }
   };
+
+  const handleSearch = (data: string) => {
+    fetch(`http://localhost:3000/users?q=${data}`)
+      .then((response) => {
+        if (!response.ok) {
+          throw new Error('Network error');
+        }
+        return response.json();
+      })
+      .then((responseData) => {
+        setCsvData(responseData);
+      })
+      .catch((error) => {
+        console.error('Error:', error);
+      });
+  }
 
   return (
     <div className='FileUploadContainer'>
@@ -56,7 +91,7 @@ function FileUploadComponent() {
           <button onClick={handleUpload}>Upload</button>
         </div>
         <div className='InputContainer'>
-          <input placeholder='search' />
+          <input placeholder='search' onChange={(e) => handleSearch(e.target.value)} />
         </div>
       </div>
       <div>

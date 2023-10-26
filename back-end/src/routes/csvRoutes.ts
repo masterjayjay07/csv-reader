@@ -4,8 +4,8 @@ import { CsvController } from "../controllers/csv/csvController";
 const csvRouter = Router();
 const controller = new CsvController()
 
-csvRouter.get('/', controller.csvGetController)
+csvRouter.get('/users', controller.csvGetController)
 
-csvRouter.post('/', controller.csvCreateController)
+csvRouter.post('/files', controller.csvCreateController)
 
 export default csvRouter

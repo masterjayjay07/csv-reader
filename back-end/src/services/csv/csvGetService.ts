@@ -1,43 +1,36 @@
-import { AppError } from "../../erros/AppErros";
-import db from "../../database/knex";
+import { ICsvCreate, IUserSearch } from "../../interfaces";
+const sqlite3 = require('sqlite3').verbose();
 
-const userGetAllService = async (
-  filters: any
-) => {
-  const currentFilters = JSON.parse(filters);
+const db = new sqlite3.Database('banco.sqlite');
 
-  // const query = db("usuario")
-  //   .select(
-  //     "id",
-  //     db.raw('UPPER("descricao") as descricao'),
-  //     db.raw('UPPER("email") as email'),
-  //     "fotobase64",
-  //     "foto_url",
-  //     "dat_cadastro"
-  //   )
-  //   .where({ ativo: "S" });
+const csvGetService = async (q: IUserSearch) => {
+  return new Promise((resolve, reject) => {
+    db.serialize(function () {
+      if (!q) {
+        return db.all('SELECT * FROM csv', (err: any, rows: ICsvCreate[]) => {
+          if (err) {
+            reject('Failed to retrieve data.');
+          } else {
+            resolve(rows);
+          }
+        });
+      }
 
-  // if (currentFilters) {
-  //     for (const key in currentFilters) {
-  //       const upperColumn = db.raw(`UPPER("${key}")`);
-  //       if (currentFilters[key] && key !== "dataIni" && key !== "dataFin") {
-  //           query.andWhere(upperColumn, "like", `%${currentFilters[key].toUpperCase()}%`);
-  //       }
-  //     }
+      const sql = `
+        SELECT *
+        FROM csv
+        WHERE name LIKE ? OR city LIKE ? OR country LIKE ? OR favorite_sport LIKE ?
+      `;
 
-  //     if (currentFilters.dataIni && currentFilters.dataFin) {
-  //       query.whereBetween('dat_cadastro', [
-  //         currentFilters.dataIni,
-  //         currentFilters.dataFin
-  //       ]);
-  //     }
-  // }
+      const searchTerm = `%${q}%`;
+      db.all(sql, [searchTerm, searchTerm, searchTerm, searchTerm], (err: any, rows: ICsvCreate[]) => {
+        if (err) {
+          return reject('Failed to retrieve data.');
+        }
+        return resolve(rows);
+      });
+    });
+  });
+}
 
-  // const users = await query;
-  // if (!users.length) {
-  //   throw new AppError(404, "Não há usuários cadastrados");
-  // }
-  // return { totalPages, users };
-};
-
-export default userGetAllService;
+export default csvGetService;

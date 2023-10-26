@@ -1,3 +1,4 @@
+//@ts-nocheck
 import { Request, Response } from "express";
 import "express-async-errors";
 import { AppError, handleError } from "../../erros/AppErros";
@@ -8,9 +9,9 @@ import csvGetService from "../../services/csv/csvGetService";
 export class CsvController {
     csvCreateController = async (req: Request, res: Response) => {
         try {
-            const data = req.body;
-            const newCsv = await csvCreateService(data);
-            return res.status(201).json(newCsv);
+            const file = req.body;
+            await csvCreateService(file);
+            return res.status(200).json({ message: "The file was uploaded successfully." });
         } catch (err) {
             if (err instanceof AppError) {
                 handleError(err, res);
@@ -21,12 +22,14 @@ export class CsvController {
 
     csvGetController = async (req: Request, res: Response) => {
         try {
-            const { body } = req.query;
-            const csvData = await csvGetService(body);
+            const { q } = req.query;
+            const csvData = await csvGetService(q);
             return res.status(200).json(csvData);
         } catch (err) {
             if (err instanceof AppError) {
                 handleError(err, res);
+            } else {
+                handleError(new AppError(500, err.message), res);
             }
         }
     };
